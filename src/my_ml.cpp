@@ -2,6 +2,7 @@
 #include "penorcup_inferencing.h"
 #include "edge-impulse-sdk/dsp/image/image.hpp"
 #include "my_camera.h"
+#include "my_display.h"
 
 #define EI_CAMERA_RAW_FRAME_BUFFER_COLS           320
 #define EI_CAMERA_RAW_FRAME_BUFFER_ROWS           240
@@ -11,7 +12,7 @@
 static bool debug_nn = false; // Set this to true to see e.g. features generated from the raw signal
 static bool is_initialised = false;
 uint8_t *snapshot_buf; //points to the output of the capture
-
+bool object;
 bool ei_camera_capture(uint32_t img_width, uint32_t img_height, uint8_t *out_buf) ;
 static int ei_camera_get_data(size_t offset, size_t length, float *out_ptr);
 
@@ -69,7 +70,15 @@ void ml_run()
     ei_printf("Predictions:\r\n");
     for (uint16_t i = 0; i < EI_CLASSIFIER_LABEL_COUNT; i++) {
         ei_printf("  %s: ", ei_classifier_inferencing_categories[i]);
+        // tft.drawString(ei_classifier_inferencing_categories[i],3*i,20);
         ei_printf("%.5f\r\n", result.classification[i].value);
+        // tft.drawFloat(result.classification[i].value,5,3*i+10,20);
+    }
+    if(result.classification[0].value>0.5){
+        object=1;
+    }
+    else{
+        object=0;
     }
 #endif
 
@@ -129,7 +138,7 @@ bool ei_camera_capture(uint32_t img_width, uint32_t img_height, uint8_t *out_buf
         return false;
     }
 
-   bool converted = fmt2rgb888(fb->buf, fb->len, PIXFORMAT_JPEG, snapshot_buf);
+   bool converted = fmt2rgb888(fb->buf, fb->len, PIXFORMAT_RGB565, snapshot_buf);
 
    esp_camera_fb_return(fb);
 

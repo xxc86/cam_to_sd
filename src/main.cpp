@@ -11,7 +11,7 @@ void setup() {
   display_init();
   psramFound();
   my_camera_init();
-  my_sd_init();
+  // my_sd_init();
 }
 
 void loop() {
@@ -22,5 +22,6 @@ void loop() {
   //   save_photo();
   // }
   display_camera();
-  // delay(10);
+  display_result();
+  delay(10);
 }
