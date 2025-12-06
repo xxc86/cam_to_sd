@@ -21,6 +21,6 @@ void loop() {
   // {
   //   save_photo();
   // }
-  // display_camera();
+  display_camera();
   // delay(10);
 }
